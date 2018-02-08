@@ -68,7 +68,7 @@ $ python -m dis test.py
              30 RETURN_VALUE
 ```
 
-Here we can see that the Python script is first compiled into instruction opcodes. When the Python interpreter runs, it will execute based on the instruction opcode and the value stack. Whenever the instruction involves manipulating data, the data will first be pushed to the value stack. Let's look at the example above. LOAD\__CONST will push 1 to the value stack. Then STORE\_NAME will pop 1 from the value stack and allocate a memory space to save it._
+Here we can see that the Python script is first compiled into instruction opcodes. When the Python interpreter runs, it will execute based on the instruction opcode and the value stack. Whenever the instruction involves manipulating data, the data will first be pushed to the value stack. Let's look at the example above. LOAD_CONST will push 1 to the value stack. Then STORE_NAME will pop 1 from the value stack and allocate a memory space to save it._
 
 stack\_pointer in [https://github.com/python/cpython/blob/master/Python/ceval.c](https://github.com/python/cpython/blob/master/Python/ceval.c) is the value stack
 
