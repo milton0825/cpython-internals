@@ -1,4 +1,4 @@
-## Frames function calls and scope
+## Frames, function calls and scope
 
 Create test.py
 ```py
