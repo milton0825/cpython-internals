@@ -63,17 +63,15 @@ Let's disassemble the byte code of method foo and bar.
              13 RETURN_VALUE
 ```
 
-
-
-In the code object, we have a list of instruction opcodes that we need to run.
+The code object contains a list of instruction opcodes compiled from the script.
 ```c
 typedef struct {
   PyObject *co_code;          /* instruction opcodes */
 } PyCodeObject;
 ```
 
-The frame object has a pointer that points at the previous frame so that we can return to it after current frame ends. It also has
-the code object so that we can run the code.
+The frame object has a pointer that points to the previous frame so that program can return to previous frame after current frame ends.
+It also has the code object so that we can run the code.
 ```c
 typedef struct _frame {
   struct _frame *f_back;      /* previous frame, or NULL */
@@ -86,6 +84,9 @@ typedef struct _frame {
 
 ```
 
+This is the main logic about how Python interpreter handles function calls. PyEval_EvalFrameEx is a method that handles execution of
+a frame. If program need to call another function in the current frame, it will create a new frame for the next level and invoke
+PyEval_EvalFrameEx with the next frame.
 ```
 PyEval_EvalFrameEx
   call_function
@@ -94,6 +95,6 @@ PyEval_EvalFrameEx
   
 ```
 
-
+## References
 https://github.com/python/cpython/blob/master/Include/code.h
 https://github.com/python/cpython/blob/master/Include/frameobject.h
