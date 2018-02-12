@@ -13,41 +13,28 @@ print z
 
 Start the python interpreter in interactive mode:
 
-```py
+```bash
 $ python  
 [GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.34)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 ```
 
+Compile test.py into a code object.
 ```py
-## This command compiles test.py into a code object.
 >>> c = compile(open('test.py').read(), 'test.py', 'exec')
 >>> c
 <code object <module> at 0x104f069b0, file "test.py", line 1>
 ```
 
+Shows each instruction byte code in ordinary.
 ```py
-## This command shows the byte code that test.py compile to.
->>> c.co_code
-'d\x00\x00Z\x00\x00d\x01\x00Z\x01\x00e\x00\x00e\x01\x00\x17Z\x02\x00e\x02\x00GHd\x02\x00S'
-```
-
-```py
-## Split the bytes into a list.
->>> [byte for byte in c.co_code]
-['d', '\x00', '\x00', 'Z', '\x00', '\x00', 'd', '\x01', '\x00', 'Z', '\x01', '\x00', 'e', '\x00', '\x00', 'e', '\x01', '\x00', '\x17', 'Z', '\x02', '\x00', 'e', '\x02', '\x00', 'G', 'H', 'd', '\x02', '\x00', 'S']
-```
-
-```py
-## Shows each byte in ordinary.
 >>> [ord(byte) for byte in c.co_code]
 [100, 0, 0, 90, 0, 0, 100, 1, 0, 90, 1, 0, 101, 0, 0, 101, 1, 0, 23, 90, 2, 0, 101, 2, 0, 71, 72, 100, 2, 0, 83]
 ```
 
-```py
-## This command loads the module in 
-## https://github.com/python/cpython/blob/master/Lib/dis.py and disassemble test.py
-## You can check https://github.com/python/cpython/blob/master/Include/opcode.h to see all the instruction opcodes.
+This command loads the module in https://github.com/python/cpython/blob/master/Lib/dis.py and disassemble test.py
+You can check https://github.com/python/cpython/blob/master/Include/opcode.h to see all the instruction opcodes.
+```bash
 $ python -m dis test.py
 
   1           0 LOAD_CONST               0 (1)
