@@ -1,6 +1,6 @@
 ## Frames, function calls and scope
 
-Create test.py
+Create a Python script test.py with code:
 ```py
 x = 10
 
@@ -14,8 +14,10 @@ def bar(x):
 
 z = foo(x)
 ```
-You can copy and paste the above code and trace it in http://www.pythontutor.com/.
 
+Let's disassemble the byte code of the above python script. We can find it first load and store the global variable x. At line 3,
+it loads the code object foo, makes it a function and bind it to its name. At line 11, it loads the function foo and the input variable
+to value stack and invoke function through CALL_FUNCTION.
 ```bash
 $ python -m dis test.py
   1           0 LOAD_CONST               0 (10)
@@ -36,14 +38,9 @@ $ python -m dis test.py
              36 LOAD_CONST               3 (None)
              39 RETURN_VALUE
 ```
-Code object is the code inside the function. 
 
-
-The reason why we need to run MAKE_FUNCTION at run time. Function object contains code and a pointer that points to its environment.
-At run time we bind function
-
-```py$
-python
+Let's disassemble the byte code of method foo and bar. 
+```py
 >>> import dis
 >>> import test
 >>> dis.dis(test.foo)
@@ -64,9 +61,9 @@ python
 
   9          10 LOAD_FAST                1 (y)
              13 RETURN_VALUE
-
-
 ```
+
+
 
 In the code object, we have a list of instruction opcodes that we need to run.
 ```c
