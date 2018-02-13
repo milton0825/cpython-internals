@@ -74,7 +74,7 @@ PyObject_Str(PyObject *v)
 ```
 
 ## References:
-https://docs.python.org/2/reference/datamodel.html
-https://docs.python.org/2/c-api/object.html
-https://github.com/python/cpython/blob/master/Include/object.h
-https://github.com/python/cpython/blob/master/Objects/object.c
+* https://docs.python.org/2/reference/datamodel.html
+* https://docs.python.org/2/c-api/object.html
+* https://github.com/python/cpython/blob/master/Include/object.h
+* https://github.com/python/cpython/blob/master/Objects/object.c
