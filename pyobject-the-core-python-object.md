@@ -13,8 +13,7 @@ alocated at an address, it never moves.
 140369635362760
 ```
 
-We can find the memory layout of a PyObject in https://github.com/python/cpython/blob/master/Include/object.h. It has two fields: 
-reference count and type.
+Every object in Python is a subclass of PyObject. It has two fields: reference count and type.
 ```c
 typedef struct _object {
     Py_ssize_t ob_refcnt;
@@ -22,6 +21,9 @@ typedef struct _object {
 } PyObject;
 ```
 
+PyVarObject is a subclass of PyObject. Although C does not support inheritance out of the box, we still can use C structural subtype.
+The first two elements of PyVarObject is reference count and object type. If we cast a PyVarObject pyVarObject to PyObject through 
+`(PyObject *) pyVarObject`, it will only look at the first two fields as if it is a PyObject.
 ```c
 typedef struct {
     PyObject ob_base;
@@ -29,6 +31,7 @@ typedef struct {
 } PyVarObject;
 ```
 
+PyLongObject is a subclass of PyVarObject. It is also a subclass of PyObject.
 ```c
 struct _longobject {
     PyVarObject ob_base;
@@ -36,6 +39,7 @@ struct _longobject {
 } PyLongObject;
 ```
 
+When instantiating a new object, the Python interpreter allocates memory based on the object type.
 ```c
 PyObject *
 _PyObject_New(PyTypeObject *tp)
@@ -48,6 +52,13 @@ _PyObject_New(PyTypeObject *tp)
 }
 ```
 
+`str` is a convenient function that returns a string representation of an object.
+```py
+>>> str([1,2,3])
+'[1, 2, 3]'
+```
+
+Let's take a closer look at the internal of `str' method. 
 ```c
 PyObject *
 PyObject_Str(PyObject *v)
