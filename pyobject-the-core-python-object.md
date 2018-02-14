@@ -1,6 +1,5 @@
 ## PyObject: the core Python object
-In Python, everything is an object. Each object hs an identity, a type and a value. An object's identity and type never changes once it has been created. Objects whose value can change are said to be mutable; objects whose value is unchangeable once they are created are called immutable. Objects are never explicitly destroyed; however, when they become unreachable they may be garbage-collected. CPython currently uses a reference-counting scheme with (optional) delayed detection of cyclically linked garbage, which collects most objects as soon as they become unreachable, but is not guaranteed to collect garbage containing circular references.
-
+In Python, everything is an object. Each object hs an identity, a type and a value. An object's identity and type never changes once it has been created. Objects whose value can change are said to be mutable; objects whose value is unchangeable once they are created are called immutable. An object has a reference count that is increased or decreased when a pointer to the object is copied or deleted. When the reference count reaches zero, the object can be garbage-collected.
 
 `dir` shows the built-in fields and functions of the object. For example, you can use \_\_add\_\_, \_\_div\_\_ on object 123.
 ```py
