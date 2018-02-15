@@ -32,5 +32,14 @@ typedef struct {
 False
 ```
 
+```
+case COMPARE_OP:
+    w = POP();
+    v = TOP();
+    x = cmp_outcome(oparg, v, w);
+        PyObject_RichCompare(v, w, op);
+            richcmpfunc frich = RICHCOMPARE(v->ob_type);
+```
+
 ## References
 * https://github.com/python/cpython/blob/master/Objects/abstract.c
