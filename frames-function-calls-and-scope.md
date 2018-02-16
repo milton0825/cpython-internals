@@ -88,11 +88,12 @@ This is the main logic about how Python interpreter handles function calls. PyEv
 a frame. If program need to call another function in the current frame, it will create a new frame for the next level and invoke
 PyEval_EvalFrameEx with the next frame.
 ```
-PyEval_EvalFrameEx
-  call_function
-    f = _PyFrame_New_NoTrack(tstate, co, globals, locals)
-    retval = PyEval_EvalFrameEx(f,0);
-  
+PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+    case CALL_FUNCTION:
+        static PyObject * call_function(PyObject ***pp_stack, int oparg #ifdef WITH_TSC , uint64* pintr0, uint64* pintr1 #endif)
+            static PyObject * fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
+                f = PyFrame_New(tstate, co, globals, NULL);
+                retval = PyEval_EvalFrameEx(f,0);  
 ```
 
 ## References
