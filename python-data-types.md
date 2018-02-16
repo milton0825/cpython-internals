@@ -1,9 +1,11 @@
 ## Python data types
 
-Sequence data types
+In Python we have the three following sequence data types:
 * String: a sequence of characters. It is immutable.
 * Tuple: a sequence of objects. It is immutable.
 * List: a sequence of objects. It is mutable.
+
+We will focus on the string object in this chapter.
 
 PyStringObject is the c implementation of string in Python.
 ```c
@@ -59,9 +61,18 @@ PyTypeObject PyString_Type = {
 };
 
 static PyObject* string_richcompare(PyStringObject *a, PyStringObject *b, int op)
-
 ```
 
+Another method worth looking at is concatenation. String concat in Python created a new object. As we can see in the following
+implementation that it first allocate memory which fits the two string and then copy the content of two objects to the memory.
+```
+static PyObject * string_concat(register PyStringObject *a, register PyObject *bb)
+    ...
+    op = (PyStringObject *)PyObject_MALLOC(PyStringObject_SIZE + size);
+    Py_MEMCPY(op->ob_sval, a->ob_sval, Py_SIZE(a));
+    Py_MEMCPY(op->ob_sval + Py_SIZE(a), b->ob_sval, Py_SIZE(b));
+    ...
+```
 
 ## References
 * https://github.com/python/cpython/blob/master/Objects/abstract.c
