@@ -17,9 +17,13 @@ alocated at an address, it never moves.
 
 Every object in Python is a subclass of PyObject. It has two fields: reference count and type.
 ```c
-typedef struct _object {
-    Py_ssize_t ob_refcnt;
+#define PyObject_HEAD                   \
+    _PyObject_HEAD_EXTRA                \
+    Py_ssize_t ob_refcnt;               \
     struct _typeobject *ob_type;
+
+typedef struct _object {
+    PyObject_HEAD
 } PyObject;
 ```
 
@@ -27,18 +31,27 @@ PyVarObject is a subclass of PyObject. Although C does not support inheritance o
 The first two elements of PyVarObject is reference count and object type. If we cast a PyVarObject pyVarObject to PyObject through 
 `(PyObject *) pyVarObject`, it will only look at the first two fields as if it is a PyObject.
 ```c
-typedef struct {
-    PyObject ob_base;
+/* PyObject_VAR_HEAD defines the initial segment of all variable-size
+ * container objects.  These end with a declaration of an array with 1
+ * element, but enough space is malloc'ed so that the array actually
+ * has room for ob_size elements.  Note that ob_size is an element count,
+ * not necessarily a byte count.
+ */
+#define PyObject_VAR_HEAD               \
+    PyObject_HEAD                       \
     Py_ssize_t ob_size; /* Number of items in variable part */
+
+typedef struct {
+    PyObject_VAR_HEAD
 } PyVarObject;
 ```
 
-PyLongObject is a subclass of PyVarObject. It is also a subclass of PyObject.
+PyIntObject is a subclass of PyObject.
 ```c
-struct _longobject {
-    PyVarObject ob_base;
-    digit ob_digit[1];
-} PyLongObject;
+typedef struct {
+    PyObject_HEAD
+    long ob_ival;
+} PyIntObject;
 ```
 
 When instantiating a new object, the Python interpreter allocates memory based on the object type.
