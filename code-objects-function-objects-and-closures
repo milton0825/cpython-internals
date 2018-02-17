@@ -1,1 +1,21 @@
+## Code objects
+```python
+>>> def foo(x, y):
+...     z = x + y
+...     return z
+...
+>>> foo
+<function foo at 0x10fc96c80>
+>>> bar = foo
+>>> bar
+<function foo at 0x10fc96c80>
+>>> dir(foo)
+['__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__doc__', '__format__', '__get__', '__getattribute__', '__globals__', '__hash__', '__init__', '__module__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc', 'func_globals', 'func_name']
+>>> foo.func_globals
+{'bar': <function foo at 0x10fc96c80>, '__builtins__': <module '__builtin__' (built-in)>, '__package__': None, '__name__': '__main__', 'foo': <function foo at 0x10fc96c80>, '__doc__': None}
+```
 
+
+## Function objects
+
+## Closures
