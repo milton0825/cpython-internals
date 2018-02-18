@@ -111,7 +111,7 @@ PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
 			static PyObject * fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
 				PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
    		 		PyObject *globals = PyFunction_GET_GLOBALS(func);
-    			PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
+    				PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
 				PyFrameObject *f = PyFrame_New(tstate, co, globals, NULL);
 				retval = PyEval_EvalFrameEx(f,0);
 			
@@ -120,3 +120,64 @@ PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
 ```
 
 ## Closures
+Enclosing the scope of bar inside the scope of foo
+```py
+x = 1000
+def foo(x):
+    def bar(y):
+        print x + y
+    return bar
+
+b1 = foo(10)
+b2 = foo(20)
+
+```
+
+```py
+>>> dis.dis(test)
+Disassembly of b1:
+  5           0 LOAD_DEREF               0 (x)
+              3 LOAD_FAST                0 (y)
+              6 BINARY_ADD
+              7 PRINT_ITEM
+              8 PRINT_NEWLINE
+              9 LOAD_CONST               0 (None)
+             12 RETURN_VALUE
+
+Disassembly of b2:
+  5           0 LOAD_DEREF               0 (x)
+              3 LOAD_FAST                0 (y)
+              6 BINARY_ADD
+              7 PRINT_ITEM
+              8 PRINT_NEWLINE
+              9 LOAD_CONST               0 (None)
+             12 RETURN_VALUE
+
+Disassembly of foo:
+  4           0 LOAD_CLOSURE             0 (x)
+              3 BUILD_TUPLE              1
+              6 LOAD_CONST               1 (<code object bar at 0x1080739b0, file "test.py", line 4>)
+              9 MAKE_CLOSURE             0
+             12 STORE_FAST               1 (bar)
+
+  6          15 LOAD_FAST                1 (bar)
+             18 RETURN_VALUE
+>>> test.b1 == test.b2
+False
+>>> test.b1.func_code == test.b2.func_code
+True
+>>> test.b1.func_code is test.b2.func_code
+True
+>>> test.b1.func_closure
+(<cell at 0x10809d8a0: int object at 0x7fb1f3d057c0>,)
+>>> test.b1.func_closure[0].cell_contents
+10
+>>> test.b2.func_closure[0].cell_contents
+20
+
+```
+
+
+
+
+
