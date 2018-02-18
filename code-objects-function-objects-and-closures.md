@@ -86,5 +86,37 @@ typedef struct {
 } PyFunctionObject;
 ```
 
+Maps Python name for example func_closure to actually grab the func_closure field from C code. Allows you to access the 
+```c
+static PyMemberDef func_memberlist[] = {
+    {"func_closure",  T_OBJECT,     OFF(func_closure),
+     RESTRICTED|READONLY},
+    {"__closure__",  T_OBJECT,      OFF(func_closure),
+     RESTRICTED|READONLY},
+    {"func_doc",      T_OBJECT,     OFF(func_doc), PY_WRITE_RESTRICTED},
+    {"__doc__",       T_OBJECT,     OFF(func_doc), PY_WRITE_RESTRICTED},
+    {"func_globals",  T_OBJECT,     OFF(func_globals),
+     RESTRICTED|READONLY},
+    {"__globals__",  T_OBJECT,      OFF(func_globals),
+     RESTRICTED|READONLY},
+    {"__module__",    T_OBJECT,     OFF(func_module), PY_WRITE_RESTRICTED},
+    {NULL}  /* Sentinel */
+};
+```
+
+```c
+PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+	case CALL_FUNCTION:
+		static PyObject * call_function(PyObject ***pp_stack, int oparg #ifdef WITH_TSC , uint64* pintr0, uint64* pintr1 #endif)
+			static PyObject * fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
+				PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
+   		 		PyObject *globals = PyFunction_GET_GLOBALS(func);
+    			PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
+				PyFrameObject *f = PyFrame_New(tstate, co, globals, NULL);
+				retval = PyEval_EvalFrameEx(f,0);
+			
+			
+			
+```
 
 ## Closures
