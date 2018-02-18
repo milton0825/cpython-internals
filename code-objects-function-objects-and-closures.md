@@ -1,6 +1,5 @@
 ## Code objects
-Code objects is created during the compilation stage and cached in memory.
-
+A code object is CPython's internal representation of a piece of runnable Python code, such as a function, a module, a class body, or a generator expression. Code objects are created during the compilation stage and cached in memory.
 ```c
 typedef struct {
     PyObject_HEAD
@@ -25,34 +24,8 @@ typedef struct {
 } PyCodeObject;
 ```
 
-
-```python
->>> def foo(x, y):
-...     z = x + y
-...     return z
-...
->>> foo
-<function foo at 0x10fc96c80>
->>> bar = foo
->>> bar
-<function foo at 0x10fc96c80>
->>> dir(foo)
-['__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__doc__', '__format__', '__get__', '__getattribute__', '__globals__', '__hash__', '__init__', '__module__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc', 'func_globals', 'func_name']
->>> foo.func_globals
-{'bar': <function foo at 0x10fc96c80>, '__builtins__': <module '__builtin__' (built-in)>, '__package__': None, '__name__': '__main__', 'foo': <function foo at 0x10fc96c80>, '__doc__': None}
->>> foo.func_code
-<code object foo at 0x10fc82d30, file "<stdin>", line 1>
->>> dir(foo.func_code)
-['__class__', '__cmp__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'co_argcount', 'co_cellvars', 'co_code', 'co_consts', 'co_filename', 'co_firstlineno', 'co_flags', 'co_freevars', 'co_lnotab', 'co_name', 'co_names', 'co_nlocals', 'co_stacksize', 'co_varnames']
->>> foo.func_code.co_argcount
-2
->>> foo.func_code.co_varnames
-('x', 'y', 'z')
-```
-
-
 ## Function objects
-Function objects is not created until you execute that line of code. During runtime we link the function object with the corresponding code object
+Function objects contains every thing the interpreter needs to run a functional code: runnable bytecode and execution environment. Function objects are created and binded to the corresponding code objects at runtime.
 
 ```c
 /* Function objects and code objects should not be confused with each other:
@@ -86,7 +59,20 @@ typedef struct {
 } PyFunctionObject;
 ```
 
-Maps Python name for example func_closure to actually grab the func_closure field from C code. Allows you to access the 
+To make a function call in current frame, the interpreter would find the code object and the executable environment globals and create a new frame. Then execute the new frame.
+```c
+PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+	case CALL_FUNCTION:
+		static PyObject * call_function(PyObject ***pp_stack, int oparg #ifdef WITH_TSC , uint64* pintr0, uint64* pintr1 #endif)
+			static PyObject * fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
+				PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
+   		 		PyObject *globals = PyFunction_GET_GLOBALS(func);
+    				PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
+				PyFrameObject *f = PyFrame_New(tstate, co, globals, NULL);
+				retval = PyEval_EvalFrameEx(f,0);		
+```
+
+`func_memberlist` maps Python name for example func_closure to actually grab the func_closure field from C code. It allows us to expose members of our C instance structure to Python.
 ```c
 static PyMemberDef func_memberlist[] = {
     {"func_closure",  T_OBJECT,     OFF(func_closure),
@@ -104,23 +90,8 @@ static PyMemberDef func_memberlist[] = {
 };
 ```
 
-```c
-PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
-	case CALL_FUNCTION:
-		static PyObject * call_function(PyObject ***pp_stack, int oparg #ifdef WITH_TSC , uint64* pintr0, uint64* pintr1 #endif)
-			static PyObject * fast_function(PyObject *func, PyObject ***pp_stack, int n, int na, int nk)
-				PyCodeObject *co = (PyCodeObject *)PyFunction_GET_CODE(func);
-   		 		PyObject *globals = PyFunction_GET_GLOBALS(func);
-    				PyObject *argdefs = PyFunction_GET_DEFAULTS(func);
-				PyFrameObject *f = PyFrame_New(tstate, co, globals, NULL);
-				retval = PyEval_EvalFrameEx(f,0);
-			
-			
-			
-```
-
 ## Closures
-Enclosing the scope of bar inside the scope of foo
+Closures are function objects that have access to a local variable from an enclosing environment which has finished its execution. In the following example, b1 has access to a local variable x=10, which is local to function foo and finished its execution.
 ```py
 x = 1000
 def foo(x):
@@ -130,7 +101,6 @@ def foo(x):
 
 b1 = foo(10)
 b2 = foo(20)
-
 ```
 
 ```py
@@ -174,7 +144,6 @@ True
 10
 >>> test.b2.func_closure[0].cell_contents
 20
-
 ```
 
 
