@@ -32,8 +32,7 @@ Shows each instruction byte code in ordinary.
 [100, 0, 0, 90, 0, 0, 100, 1, 0, 90, 1, 0, 101, 0, 0, 101, 1, 0, 23, 90, 2, 0, 101, 2, 0, 71, 72, 100, 2, 0, 83]
 ```
 
-This command loads the module in https://github.com/python/cpython/blob/master/Lib/dis.py and disassemble test.py
-You can check https://github.com/python/cpython/blob/master/Include/opcode.h to see all the instruction opcodes.
+This command loads the module in https://github.com/milton0825/cpython-internals/blob/master/Python-2.7.8/Lib/dis.py and disassemble test.py You can check https://github.com/milton0825/cpython-internals/blob/master/Python-2.7.8/Include/opcode.h to see all the instruction opcodes.
 ```bash
 $ python -m dis test.py
 
@@ -59,7 +58,7 @@ Here we can see that the Python script is first compiled into instruction opcode
 
 
 ## Main interpreter loop
-Here is the main cpython interpreter loop:
+Here is the main cpython interpreter loop. You can find the details in https://github.com/milton0825/cpython-internals/blob/master/Python-2.7.8/Python/ceval.c
 ```c
 initialize value stack
 
@@ -84,4 +83,4 @@ for (;;) {
   }
 }
 ```
-https://github.com/python/cpython/blob/master/Python/ceval.c
+https://github.com/milton0825/cpython-internals/blob/master/Python-2.7.8/Python/ceval.c
