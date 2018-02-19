@@ -6,10 +6,13 @@
 |           |           |           |             |           |
 |___________|           |___________|             |___________|
 ```
-This is my reading notes of http://pgbovine.net/cpython-internals.htm. This note dive deep into the cpython internal of Python-2.7.8 in the following topics:
+This is my reading notes of CPython internal of Python-2.7.8. It covers the following topics:
 * [Opcodes and main interpreter loop](opcodes-and-main-interpreter-loop.md)
 * [Frames, functiona calls and scope](frames-function-calls-and-scope.md)
 * [PyObject: the core Python object](pyobject-the-core-python-object.md)
 * [Python data types](python-data-types.md)
 * [Code objects, function objects and closures](code-objects-function-objects-and-closures.md)
 * [Iterators](iterators.md)
+
+References
+* [CPython internals: A ten-hour codewalk through the Python interpreter source code](http://pgbovine.net/cpython-internals.htm)
