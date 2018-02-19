@@ -1,5 +1,5 @@
 ## Iterators
-An iterator allows you to iterate through all the elements in a collection in a specific order.
+An iterator allows you to iterate through all the elements in a collection in a specific order. From the example below, we created a list with elements 1, 2, and 3. We created a iterator object `i` and used `i.next()` to iterate through all the objects in `x`. When we reach the end of the list, a StopIteration exception is raised.
 
 ```py
 >>> x = [1, 2, 3]
@@ -18,11 +18,14 @@ Traceback (most recent call last):
 StopIteration
 ```
 
+Let's create a Python script test.py with code:
 ```py
 x = ['a', 'b', 'c']
 for e in x:
     print e
 ```
+
+Let's disassemble test.py and look at the instruction code. `GET_ITER` creates an iterator object over collection x. `FOR_ITER` creates a loop to iterate through all the elements. When ever we finished an iteration, `JUMP_ABSOLUTE` will jump back to `FOR_ITER` to proceed on the next iteration. After we iterate through all the elements in x, we will jump to `POP_BLOCK` and exit.
 ```bash
 $ python -m dis test.py
   1           0 LOAD_CONST               0 ('a')
