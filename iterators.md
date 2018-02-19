@@ -49,88 +49,29 @@ $ python -m dis test.py
              40 RETURN_VALUE
 ```
 
+This is the cpython internal of how `GET_ITER` and `FOR_ITER` works. `GET_ITER` instruction gets the interator of object v. Since `GET_ITER` usually followed by `FOR_ITER`, it jumps to `FOR_ITER` to skip the main interpreter loop for optimization. In `FOR_ITER`, it grabs the `tp_iternext` function pointer from the type object of v and calls it.
 ```c
 PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
     case GET_ITER:
         v = TOP();
         x = PyObject_GetIter(v);
-            PyObject * PyObject_GetIter(PyObject *o)
-            {
-                PyTypeObject *t = o->ob_type;
-                getiterfunc f = NULL;
-                if (PyType_HasFeature(t, Py_TPFLAGS_HAVE_ITER)) ## listobject does not have Py_TPFLAGS_HAVE_ITER=true
-                    f = t->tp_iter;
-                if (f == NULL) {
-                    if (PySequence_Check(o))
-                        return PySeqIter_New(o);
-                            PyObject * PySeqIter_New(PyObject *seq)
-                            {
-                                seqiterobject *it;
-
-                                if (!PySequence_Check(seq)) {
-                                    PyErr_BadInternalCall();
-                                    return NULL;
-                                }
-                                it = PyObject_GC_New(seqiterobject, &PySeqIter_Type);
-                                if (it == NULL)
-                                    return NULL;
-                                it->it_index = 0;
-                                Py_INCREF(seq);
-                                it->it_seq = seq;
-                                _PyObject_GC_TRACK(it);
-                                return (PyObject *)it;
-                            }
-                        
-                        
-                        
-                    return type_error("'%.200s' object is not iterable", o);
-                }
-                else {
-                    PyObject *res = (*f)(o);
-                    if (res != NULL && !PyIter_Check(res)) {
-                        PyErr_Format(PyExc_TypeError,
-                                     "iter() returned non-iterator "
-                                     "of type '%.100s'",
-                                     res->ob_type->tp_name);
-                        Py_DECREF(res);
-                        res = NULL;
-                    }
-                    return res;
-                }
-            }
-        
-        
-        Py_DECREF(v);
-        if (x != NULL) {
-            SET_TOP(x);
-            PREDICT(FOR_ITER); ## GET_ITER often follows by FOR_ITER
-            continue;
-        }
+        ...
+        PREDICT(FOR_ITER); ## GET_ITER often follows by FOR_ITER
         break;
     case FOR_ITER:
-        /* before: [iter]; after: [iter, iter()] *or* [] */
         v = TOP();
         x = (*v->ob_type->tp_iternext)(v); /* x = v.next() */
-        if (x != NULL) {
-            PUSH(x);
-            PREDICT(STORE_FAST);
-            PREDICT(UNPACK_SEQUENCE);
-            continue;
-        }
+        ...
         if (PyErr_Occurred()) {
             if (!PyErr_ExceptionMatches(
                             PyExc_StopIteration))
                 break;
             PyErr_Clear();
         }
-        /* iterator ended normally */
-        x = v = POP();
-        Py_DECREF(v);
-        JUMPBY(oparg);
-        continue;
-
+        ...
 ```
 
+This is the cpython internal of seqiterobject. `it_index` records the current position and `it_seq` points at the object we are iterating through.
 ```c
 typedef struct {
     PyObject_HEAD
@@ -139,6 +80,7 @@ typedef struct {
 } seqiterobject;
 ```
 
+We can make a custom object iterable as long as the class implements `__iter__` and `next`.
 ```py
 class Counter:
     def __init__(self, low, high):
