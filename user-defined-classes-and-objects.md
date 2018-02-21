@@ -1,6 +1,6 @@
 ## User-defined classes and objects
 
-In C++ or Java, fields and methods in a class are pre-defined; in Python, fields and methods can be added to a class at runtime. For example, we can add a field `low` in `Counter` class at runtime. We can also add a new method `jump` at runtime.
+In C++ or Java, fields and methods in a class are pre-defined; in Python, fields and methods can be added to a class at runtime. In the following example, we can add a field `low` in `Counter` class at runtime. We can also add a new method `jump` at runtime.
 ```py
 class Counter:
     def __init__(self, low, high):
@@ -88,6 +88,7 @@ typedef struct {
 } PyInstanceObject;
 ```
 
+This is the cpython internal representation of a class method. It contains a pointer to the function object and a pointer to the instance.
 ```c
 typedef struct {
     PyObject_HEAD
@@ -98,6 +99,7 @@ typedef struct {
 } PyMethodObject;
 ```
 
+This is the stack trace of object construction. For example, `c = Counter(1,5)`.
 ```c
 PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag) 
 {
@@ -136,9 +138,7 @@ PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
     }
     ...
 }
-```
 
-```c
 PyTypeObject PyClass_Type = {
     ...
     PyInstance_New,                             /* tp_call */
