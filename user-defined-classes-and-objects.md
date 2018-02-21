@@ -97,3 +97,45 @@ typedef struct {
     PyObject *im_weakreflist; /* List of weak references */
 } PyMethodObject;
 ```
+
+```c
+PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag) 
+{
+    ...
+    case CALL_FUNCTION:
+    {
+        x = call_function(&sp, oparg, &intr0, &intr1);
+        |
+            static PyObject *call_function(PyObject ***pp_stack, int oparg #ifdef WITH_TSC, uint64* pintr0, uint64* pintr1 #endif)
+            {
+                x = do_call(func, pp_stack, na, nk);
+                |
+                static PyObject * do_call(PyObject *func, PyObject ***pp_stack, int na, int nk)
+                {
+                    result = PyObject_Call(func, callargs, kwdict)
+                    |
+                    PyObject * PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw)
+                    {
+                        call = func->ob_type->tp_call;
+                        |
+                        PyObject * PyInstance_New(PyObject *klass, PyObject *arg, PyObject *kw)
+                        |
+                        result = (*call)(func, arg, kw);
+                    }
+                    |
+                }
+                |
+            }
+        |
+    }
+    ...
+}
+```
+
+```c
+PyTypeObject PyClass_Type = {
+    ...
+    PyInstance_New,                             /* tp_call */
+    ...
+};
+```
