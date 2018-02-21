@@ -119,6 +119,12 @@ PyObject * PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
                         call = func->ob_type->tp_call;
                         |
                         PyObject * PyInstance_New(PyObject *klass, PyObject *arg, PyObject *kw)
+                        {
+                            initstr = PyString_InternFromString("__init__");
+                            init = instance_getattr2(inst, initstr);
+                            PyObject *res = PyEval_CallObjectWithKeywords(init, arg, kw);
+                            ...
+                        }
                         |
                         result = (*call)(func, arg, kw);
                     }
