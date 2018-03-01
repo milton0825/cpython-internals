@@ -32,3 +32,34 @@ def Counter(low, high):
 for c in Counter(5, 10):
     print c
 ```
+
+`os.walk` also uses generator.
+
+what is generator. what is yield
+
+```py
+>>> import test
+>>> import dis
+>>> dis.dis(test.Counter)
+  2           0 LOAD_FAST                0 (low)
+              3 STORE_FAST               2 (current)
+
+  3           6 SETUP_LOOP              31 (to 40)
+        >>    9 LOAD_FAST                2 (current)
+             12 LOAD_FAST                1 (high)
+             15 COMPARE_OP               0 (<)
+             18 POP_JUMP_IF_FALSE       39
+
+  4          21 LOAD_FAST                2 (current)
+             24 YIELD_VALUE
+             25 POP_TOP
+
+  5          26 LOAD_FAST                2 (current)
+             29 LOAD_CONST               1 (1)
+             32 INPLACE_ADD
+             33 STORE_FAST               2 (current)
+             36 JUMP_ABSOLUTE            9
+        >>   39 POP_BLOCK
+        >>   40 LOAD_CONST               0 (None)
+             43 RETURN_VALUE
+```
